@@ -3,6 +3,9 @@ package com.sina.sinagame.credit;
 import android.app.Activity;
 import android.os.Bundle;
 
+/**
+ * @author liu_chonghui
+ */
 public class MainActivity extends Activity {
 
     @Override
