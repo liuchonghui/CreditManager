@@ -15,6 +15,7 @@
         <item>com.android.overlay.manager.NetworkManager</item>
         <item>com.android.overlay.manager.ScreenManager</item>
         <item>com.android.overlay.manager.SettingsManager</item>
+        <item>com.sina.sinagame.credit.CreditManager</item>
     </string-array>
     <string-array name="tables">
     </string-array>

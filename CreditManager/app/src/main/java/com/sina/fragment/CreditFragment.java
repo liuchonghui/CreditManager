@@ -20,6 +20,8 @@ import com.sina.engine.base.request.options.RequestOptions;
 import com.sina.request.AccountInfo;
 import com.sina.request.AccountInfoRequestModel;
 import com.sina.request.ReuqestDataProcess;
+import com.sina.sinagame.credit.CreditManager;
+import com.sina.sinagame.credit.OnAccountListReceivedListener;
 import com.sina.sinagame.credit.R;
 
 import org.apache.http.HttpStatus;
@@ -59,50 +61,18 @@ public class CreditFragment extends BaseFragment {
     List<AccountInfo> accountList = new ArrayList<AccountInfo>();
 
     protected void initRequestData() {
-//        String requestDomainName = RequestConstant.DOMAIN_NAME;
-//        String requestPhpName = RequestConstant.USER_PHPNAME;
-//        String requestAction = RequestConstant.USERINFO_ACTION;
-        // TODO
-        String requestDomainName = "file:///android_asset/account_info.txt";
-        String requestPhpName = "";
-        String requestAction = null;
-
-        AccountInfoRequestModel accountInfoRequestModel = new AccountInfoRequestModel(
-                requestDomainName, requestPhpName);
-        accountInfoRequestModel.setAction(requestAction);
-
-        RequestOptions requestOptions = new RequestOptions()
-                .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(true)
-                .setIsSaveMemory(false).setIsSaveDb(false)
-                .setMemoryLifeTime(120)
-                .setReturnDataClassTypeEnum(ReturnDataClassTypeEnum.list)
-                .setReturnModelClass(AccountInfo.class);
-
-        ReuqestDataProcess.requestData(true, accountInfoRequestModel,
-                requestOptions, new AccountInfoRequestResult(), null);
-    }
-
-    class AccountInfoRequestResult implements RequestDataListener {
-
-        @Override
-        public void resultCallBack(TaskModel taskModel) {
-            ArrayList<AccountInfo> list = null;
-            boolean success = false;
-            if (taskModel.getReturnModel() != null) {
-                list = (ArrayList<AccountInfo>) taskModel.getReturnModel();
-                if (list != null) {
-                    if (String.valueOf(HttpStatus.SC_OK).equalsIgnoreCase(
-                            taskModel.getResult())) {
-                        success = true;
-                    }
-                }
+        CreditManager.getInstance().requestAccountList(new OnAccountListReceivedListener() {
+            @Override
+            public void onAccountListReceivedSuccess(List<AccountInfo> accountInfos) {
+                accountList.addAll(accountInfos);
+                flushPage();
             }
-            if (success) {
-                accountList.addAll(list);
-                myAdapter.setData(accountList);
-                myAdapter.notifyDataSetChanged();
+
+            @Override
+            public void onAccountListReceivedFailure(String message) {
+
             }
-        }
+        });
     }
 
     @Override
@@ -126,6 +96,11 @@ public class CreditFragment extends BaseFragment {
         myAdapter = new MyAdapter();
         myAdapter.setData(accountList);
         mListView.setAdapter(myAdapter);
+    }
+
+    protected void flushPage() {
+        myAdapter.setData(accountList);
+        myAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -216,12 +191,14 @@ public class CreditFragment extends BaseFragment {
                 convertView = LayoutInflater.from(getActivity()).inflate(getItemLayout(), parent, false);
                 holder.layout = (ViewGroup) convertView.findViewById(R.id.item_layout);
                 holder.title = (TextView) convertView.findViewById(R.id.item_title);
+                holder.score = (TextView) convertView.findViewById(R.id.item_score);
                 holder.listener = new ItemClickListener();
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
             holder.title.setText(model.getName());
+            holder.score.setText(model.getScore());
             holder.listener.setData(model);
             holder.layout.setOnClickListener(holder.listener);
 
@@ -246,6 +223,7 @@ public class CreditFragment extends BaseFragment {
         class ViewHolder {
             ViewGroup layout;
             TextView title;
+            TextView score;
             ItemClickListener listener;
         }
     }

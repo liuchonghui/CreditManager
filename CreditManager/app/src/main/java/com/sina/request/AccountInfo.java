@@ -21,6 +21,8 @@ public class AccountInfo extends BaseModel {
     private String birthday;
     private String sex;
 
+    private String score;
+
     public String getAccount() {
         return account;
     }
@@ -107,5 +109,13 @@ public class AccountInfo extends BaseModel {
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
     }
 }

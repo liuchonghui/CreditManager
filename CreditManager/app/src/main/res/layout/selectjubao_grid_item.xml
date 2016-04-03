@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:id="@+id/item_layout"
+        android:id="@+id/title_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
@@ -18,10 +20,21 @@
             android:id="@+id/item_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
+            android:paddingLeft="0dp"
             android:paddingRight="5dp"
             android:textColor="#333333"
             android:textSize="16sp"
             android:text="text"/>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/item_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title_layout"
+        android:paddingLeft="10dp"
+        android:paddingRight="5dp"
+        android:textColor="#666666"
+        android:textSize="14sp"
+        android:text="score"/>
 </RelativeLayout>
