@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- PullToRefreshAdapterView-ID -->
+    <!-- <item name="list" type="id"/> -->
+    <item name="webview" type="id"/>
+    <item name="scrollview" type="id"/>
+    <item name="gridview" type="id"/>
+    <item name="tag_changed_visibility" type="id"/>
+
+</resources>

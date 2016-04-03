@@ -1,0 +1,10 @@
+<resources>
+
+     <!-- pulltorefresh-android 开源控件 -->
+    <string name="pull_to_loadmore_release_label">松开获取更多</string>
+    <string name="pull_to_loadmore_pull_label">上拉加载更多</string>
+    <string name="pull_to_refresh_pull_label">下拉刷新</string>
+    <string name="pull_to_refresh_release_label">放开可以刷新</string>
+    <string name="pull_to_refresh_refreshing_label">正在载入…</string>
+
+</resources>
