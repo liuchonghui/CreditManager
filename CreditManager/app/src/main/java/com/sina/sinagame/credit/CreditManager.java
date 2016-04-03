@@ -12,6 +12,7 @@ import com.sina.request.AccountInfo;
 import com.sina.request.AccountInfoRequestModel;
 import com.sina.request.AdditionInfo;
 import com.sina.request.CreditData;
+import com.sina.request.FindDataIntegralGameModel;
 import com.sina.request.GiftDataAllModel;
 import com.sina.request.GiftDataModel;
 import com.sina.request.PlatformType;
@@ -67,6 +68,7 @@ public class CreditManager implements Serializable {
 
     class AccountInfoRequestResult implements RequestDataListener {
         OnAccountListReceivedListener l;
+
         public AccountInfoRequestResult(OnAccountListReceivedListener l) {
             this.l = l;
         }
@@ -90,8 +92,8 @@ public class CreditManager implements Serializable {
     }
 
     protected void notifyAccountListResult(final boolean success, final String message,
-                                          final List<AccountInfo> accountInfos,
-                                          final OnAccountListReceivedListener listener) {
+                                           final List<AccountInfo> accountInfos,
+                                           final OnAccountListReceivedListener listener) {
         RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -116,6 +118,7 @@ public class CreditManager implements Serializable {
     }
 
     public static final String DOMAIN_NAME = "http://gameapi.g.sina.com.cn/game_api/";
+    public static final String NEW_DOMAIN_NAME = "http://gameapi.g.sina.com.cn/app/games/api/";
 
     public void requestAccountScore(String guid, String token, String deadline, String uid) {
         if (guid == null || guid.length() == 0) {
@@ -141,6 +144,7 @@ public class CreditManager implements Serializable {
         accountInfoRequestModel.setGtoken(token);
         accountInfoRequestModel.setDeadline(deadline);
         accountInfoRequestModel.setUid(uid);
+        accountInfoRequestModel.setFrom(nextID());
 
         RequestOptions requestOptions = new RequestOptions()
                 .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
@@ -180,7 +184,7 @@ public class CreditManager implements Serializable {
     }
 
     protected void notifyAccountScoreResult(final boolean success, final String message,
-                                           final String guid, final String score) {
+                                            final String guid, final String score) {
         RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -299,7 +303,7 @@ public class CreditManager implements Serializable {
     }
 
     protected synchronized void submitUserOperation(AccountInfo info, String taskId, String newsId,
-                                       String shareAddInfo) {
+                                                    String shareAddInfo) {
         if (info == null || info.getGuid() == null || taskId == null
                 || taskId.length() == 0 || newsId == null) {
             return;
@@ -417,7 +421,7 @@ public class CreditManager implements Serializable {
         String requestPhpName = "giftApi.php";
         String requestAction = "recommendList";
         UserGiftListRequestModel userGiftListRequestModel = new UserGiftListRequestModel(
-                    requestDomainName, requestPhpName);
+                requestDomainName, requestPhpName);
         userGiftListRequestModel.setAction(requestAction);
         userGiftListRequestModel.setCount(10);
         userGiftListRequestModel.setPage(1);
@@ -449,5 +453,73 @@ public class CreditManager implements Serializable {
                 }
             }
         }
+    }
+
+    public void requestH5Games(AccountInfo info) {
+        if (info == null || info.getGuid() == null) {
+
+        }
+        String requestDomainName = NEW_DOMAIN_NAME;
+        String requestPhpName = "cf/game_list";
+
+        AccountInfoRequestModel requestModel = new AccountInfoRequestModel(requestDomainName,
+                requestPhpName);
+        requestModel.setGuid(info.getGuid());
+        requestModel.setGtoken(info.getGtoken());
+        requestModel.setDeadline(info.getDeadline());
+
+        RequestOptions requestOptions = new RequestOptions()
+                .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
+                .setIsSaveMemory(false).setIsSaveDb(false)
+                .setMemoryLifeTime(120)
+                .setReturnDataClassTypeEnum(ReturnDataClassTypeEnum.list)
+                .setReturnModelClass(FindDataIntegralGameModel.class);
+
+        ReuqestDataProcess.requestData(true, requestModel,
+                requestOptions, new H5GamesRequestResult(info.getGuid()), null);
+    }
+
+    class H5GamesRequestResult implements RequestDataListener {
+        String guid;
+
+        public H5GamesRequestResult(String guid) {
+            this.guid = guid;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void resultCallBack(TaskModel taskModel) {
+            ArrayList<FindDataIntegralGameModel> list = null;
+            boolean success = false;
+            String message = taskModel.getMessage();
+            if (taskModel.getReturnModel() != null) {
+                list = (ArrayList<FindDataIntegralGameModel>) taskModel.getReturnModel();
+                if (list != null) {
+                    if (String.valueOf(HttpStatus.SC_OK).equalsIgnoreCase(
+                            taskModel.getResult())) {
+                        success = true;
+                    }
+                }
+            }
+            notifyH5GamesResult(success, message, guid, list);
+        }
+    }
+
+    protected void notifyH5GamesResult(final boolean success, final String message,
+                                       final String guid, final List<FindDataIntegralGameModel> games) {
+        RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnH5GamesReceivedListener listener : RunningEnvironment
+                        .getInstance().getUIListeners(
+                                OnH5GamesReceivedListener.class)) {
+                    if (success) {
+                        listener.onH5GamesReceivedSuccess(guid, games);
+                    } else {
+                        listener.onH5GamesReceivedFailure(message);
+                    }
+                }
+            }
+        });
     }
 }

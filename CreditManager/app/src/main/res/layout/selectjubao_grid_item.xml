@@ -55,5 +55,13 @@
             android:textSize="14sp"
             android:paddingRight="10dp"
             android:text="新浪游戏任务"/>
+
+        <Button android:id="@+id/item_btn2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:paddingRight="10dp"
+            android:text="H5游戏任务"
+            android:visibility="gone"/>
     </LinearLayout>
 </RelativeLayout>
