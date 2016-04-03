@@ -8,23 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.sina.engine.base.enums.HttpTypeEnum;
-import com.sina.engine.base.enums.ReturnDataClassTypeEnum;
-import com.sina.engine.base.request.listener.RequestDataListener;
-import com.sina.engine.base.request.model.TaskModel;
-import com.sina.engine.base.request.options.RequestOptions;
+import com.android.overlay.RunningEnvironment;
+import com.sina.activity.CustomWaitDialog;
 import com.sina.request.AccountInfo;
-import com.sina.request.AccountInfoRequestModel;
-import com.sina.request.ReuqestDataProcess;
 import com.sina.sinagame.credit.CreditManager;
 import com.sina.sinagame.credit.OnAccountListReceivedListener;
+import com.sina.sinagame.credit.OnAccountScoreReceivedListener;
 import com.sina.sinagame.credit.R;
-
-import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +25,7 @@ import java.util.List;
 /**
  * @author liu_chonghui
  */
-public class CreditFragment extends BaseFragment {
+public class CreditFragment extends BaseFragment implements OnAccountScoreReceivedListener {
 
     protected int getPageLayout() {
         return R.layout.activity_main;
@@ -42,7 +35,18 @@ public class CreditFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startTransaction();
+
+        RunningEnvironment.getInstance().addUIListener(
+                OnAccountScoreReceivedListener.class, this);
+
         initData();
+    }
+
+    @Override
+    public void onDestroy() {
+        RunningEnvironment.getInstance().removeUIListener(
+                OnAccountScoreReceivedListener.class, this);
+        super.onDestroy();
     }
 
     protected void startTransaction() {
@@ -66,11 +70,17 @@ public class CreditFragment extends BaseFragment {
             public void onAccountListReceivedSuccess(List<AccountInfo> accountInfos) {
                 accountList.addAll(accountInfos);
                 flushPage();
+
+                for (AccountInfo info : accountInfos) {
+                    if (info == null || info.getGuid() == null) {
+                        continue;
+                    }
+                    requestAccountScore(info.getGuid());
+                }
             }
 
             @Override
             public void onAccountListReceivedFailure(String message) {
-
             }
         });
     }
@@ -87,11 +97,15 @@ public class CreditFragment extends BaseFragment {
         return mView;
     }
 
+    CustomWaitDialog mUpdateDialog;
     ListView mListView;
     MyAdapter myAdapter;
 
     @SuppressLint("InflateParams")
     protected void intView(View view) {
+        mUpdateDialog = new CustomWaitDialog(getActivity());
+        mUpdateDialog.setCanceledOnTouchOutside(false);
+
         mListView = (ListView) view.findViewById(R.id.list_layout);
         myAdapter = new MyAdapter();
         myAdapter.setData(accountList);
@@ -198,7 +212,9 @@ public class CreditFragment extends BaseFragment {
                 holder = (ViewHolder) convertView.getTag();
             }
             holder.title.setText(model.getName());
-            holder.score.setText(model.getScore());
+            if (model.getScore() != null && model.getScore().length() > 0) {
+                holder.score.setText(model.getScore());
+            }
             holder.listener.setData(model);
             holder.layout.setOnClickListener(holder.listener);
 
@@ -226,5 +242,36 @@ public class CreditFragment extends BaseFragment {
             TextView score;
             ItemClickListener listener;
         }
+    }
+
+    protected void requestAccountScore(String id) {
+        for (AccountInfo info : accountList) {
+            if (id.equalsIgnoreCase(info.getGuid())) {
+                CreditManager.getInstance().requestAccountScore(info.getGuid(),
+                        info.getGtoken(), info.getDeadline(), info.getAccount());
+            }
+        }
+    }
+
+    @Override
+    public void onAccountScoreReceivedSuccess(String userId, String score) {
+        boolean modified = false;
+        for (AccountInfo info : accountList) {
+            if (info == null || info.getGuid() == null) {
+                continue;
+            }
+            if (info.getGuid().equalsIgnoreCase(userId)) {
+                modified = true;
+                info.setScore(score);
+            }
+        }
+        if (modified) {
+            flushPage();
+        }
+    }
+
+    @Override
+    public void onAccountScoreReceivedFailure(String message) {
+
     }
 }

@@ -36,5 +36,5 @@
         android:paddingRight="5dp"
         android:textColor="#666666"
         android:textSize="14sp"
-        android:text="score"/>
+        android:text="获取中.."/>
 </RelativeLayout>

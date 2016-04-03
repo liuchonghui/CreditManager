@@ -1,6 +1,7 @@
 package com.sina.sinagame.credit;
 
 import com.android.overlay.RunningEnvironment;
+import com.android.overlay.utils.LogUtils;
 import com.sina.engine.base.enums.HttpTypeEnum;
 import com.sina.engine.base.enums.ReturnDataClassTypeEnum;
 import com.sina.engine.base.request.listener.RequestDataListener;
@@ -99,6 +100,86 @@ public class CreditManager implements Serializable {
                         listener.onAccountListReceivedSuccess(accountInfos);
                     } else {
                         listener.onAccountListReceivedFailure(message);
+                    }
+                }
+            }
+        });
+    }
+
+    public void requestAccountScore(String id, String token, String deadline, String uid) {
+        if (id == null || id.length() == 0) {
+            return;
+        }
+        if (token == null || token.length() == 0) {
+            return;
+        }
+        if (deadline == null || deadline.length() == 0) {
+            return;
+        }
+        if (uid == null || uid.length() == 0) {
+            return;
+        }
+        String requestDomainName = "http://gameapi.g.sina.com.cn/game_api/";
+        String requestPhpName = "userApi.php";
+        String requestAction = "userInfo";
+
+        AccountInfoRequestModel accountInfoRequestModel = new AccountInfoRequestModel(
+                requestDomainName, requestPhpName);
+        accountInfoRequestModel.setAction(requestAction);
+        accountInfoRequestModel.setGuid(id);
+        accountInfoRequestModel.setGtoken(token);
+        accountInfoRequestModel.setDeadline(deadline);
+        accountInfoRequestModel.setUid(uid);
+
+        RequestOptions requestOptions = new RequestOptions()
+                .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
+                .setIsSaveMemory(false).setIsSaveDb(false)
+                .setMemoryLifeTime(120)
+                .setReturnDataClassTypeEnum(ReturnDataClassTypeEnum.object)
+                .setReturnModelClass(AccountInfo.class);
+
+        ReuqestDataProcess.requestData(true, accountInfoRequestModel,
+                requestOptions, new AccountScoreRequestResult(id), null);
+    }
+
+    class AccountScoreRequestResult implements RequestDataListener {
+        String id;
+
+        public AccountScoreRequestResult(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public void resultCallBack(TaskModel taskModel) {
+            AccountInfo retModel = null;
+            boolean success = false;
+            String message = taskModel.getMessage();
+            if (taskModel.getReturnModel() != null) {
+                retModel = (AccountInfo) taskModel.getReturnModel();
+                if (retModel != null) {
+                    if (String.valueOf(HttpStatus.SC_OK).equalsIgnoreCase(
+                            taskModel.getResult())) {
+                        retModel.setGuid(id);
+                        success = true;
+                    }
+                }
+            }
+            notifyAccountScoreResult(success, message, id, retModel.getScore());
+        }
+    }
+
+    protected void notifyAccountScoreResult(final boolean success, final String message,
+                                           final String uid, final String score) {
+        RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnAccountScoreReceivedListener listener : RunningEnvironment
+                        .getInstance().getUIListeners(
+                                OnAccountScoreReceivedListener.class)) {
+                    if (success) {
+                        listener.onAccountScoreReceivedSuccess(uid, score);
+                    } else {
+                        listener.onAccountScoreReceivedFailure(message);
                     }
                 }
             }
