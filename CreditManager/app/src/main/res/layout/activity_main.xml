@@ -9,8 +9,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.sina.sinagame.credit.MainActivity">
 
-    <TextView
+    <TextView android:id="@+id/top_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="选择用户：" />
+    <ListView android:id="@+id/list_layout"
+        android:paddingTop="10dp"
+        android:layout_below="@+id/top_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>

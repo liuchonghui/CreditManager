@@ -1,0 +1,26 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ContentDescription"
+    android:background="@drawable/wait_dialog_bg"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    
+    <RelativeLayout android:id="@+id/wait_dialog_toast_layout"
+                android:layout_width="wrap_content"
+                android:layout_centerInParent="true"
+			    android:layout_height="wrap_content">
+        <ImageView
+	        android:id="@+id/wait_dialog_toast_icon"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="10dp"/>
+	    <TextView android:id="@+id/wait_dialog_toast_title"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@id/wait_dialog_toast_icon"
+	        android:layout_centerVertical="true"
+	        android:textSize="14sp"
+	        android:textColor="#ffffff"
+	        android:text="加载中"/>
+    </RelativeLayout>
+</RelativeLayout>

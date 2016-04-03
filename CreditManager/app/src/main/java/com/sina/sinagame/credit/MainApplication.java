@@ -8,6 +8,9 @@ import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.android.overlay.RunningEnvironment;
+import com.sina.engine.base.config.EngineConfig;
+import com.sina.engine.base.manager.EngineManager;
+import com.sina.request.OkHttpJsonFetcherFactory;
 
 /**
  * @author liu_chonghui
@@ -31,6 +34,15 @@ public class MainApplication extends Application {
             subSystem = RunningEnvironment.getInstance();
         }
         subSystem.onCreate(this);
+
+        EngineManager.init(this);
+        EngineManager.getInstance().initConfig(new EngineConfig().setIsEncrypt(true)
+                .setDebug(true)
+                .setCid("0")
+                .setDeviceId("355dbee81a5f1709d905a31c56b72ab15")
+                .setJsonFetcherFactory(new OkHttpJsonFetcherFactory())
+                .setPartner_id("10001"));
+
 
         subSystem.run(this);
     }
