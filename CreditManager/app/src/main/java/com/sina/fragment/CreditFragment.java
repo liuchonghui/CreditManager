@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -65,18 +66,14 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
     List<AccountInfo> accountList = new ArrayList<AccountInfo>();
 
     protected void initRequestData() {
+        CreditManager.getInstance().requestGiftListData();
         CreditManager.getInstance().requestAccountList(new OnAccountListReceivedListener() {
             @Override
             public void onAccountListReceivedSuccess(List<AccountInfo> accountInfos) {
                 accountList.addAll(accountInfos);
                 flushPage();
 
-                for (AccountInfo info : accountInfos) {
-                    if (info == null || info.getGuid() == null) {
-                        continue;
-                    }
-                    requestAccountScore(info.getGuid());
-                }
+                requestAccountsScore();
             }
 
             @Override
@@ -206,6 +203,7 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
                 holder.layout = (ViewGroup) convertView.findViewById(R.id.item_layout);
                 holder.title = (TextView) convertView.findViewById(R.id.item_title);
                 holder.score = (TextView) convertView.findViewById(R.id.item_score);
+                holder.btn = (Button) convertView.findViewById(R.id.item_btn);
                 holder.listener = new ItemClickListener();
                 convertView.setTag(holder);
             } else {
@@ -216,7 +214,7 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
                 holder.score.setText(model.getScore());
             }
             holder.listener.setData(model);
-            holder.layout.setOnClickListener(holder.listener);
+            holder.btn.setOnClickListener(holder.listener);
 
             return convertView;
         }
@@ -233,6 +231,7 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
                 if (item == null) {
                     return;
                 }
+                CreditManager.getInstance().getCredits(item);
             }
         }
 
@@ -240,7 +239,17 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
             ViewGroup layout;
             TextView title;
             TextView score;
+            Button btn;
             ItemClickListener listener;
+        }
+    }
+
+    protected void requestAccountsScore() {
+        for (AccountInfo info : accountList) {
+            if (info == null || info.getGuid() == null) {
+                continue;
+            }
+            requestAccountScore(info.getGuid());
         }
     }
 

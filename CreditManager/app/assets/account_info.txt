@@ -36,6 +36,18 @@
                     "sex": 1,
                     "account": "2732811515",
                     "accessToken": "2.00FHbwyCbPn2YC7c1b442deeqS3FJD"
+                },
+                {
+                    "type": 1,
+                    "guid": "15",
+                    "gtoken": "ZEpteVErSWtQTzZnbFJrL1E4cGhXTS92Q3cvMHcxYVc4ZkhjNWVBM0J2L3hFL0h1bzFubGtjMFR6OFB1SDZUcXBQMXFyaFBzKzZjVWRVVnQ3c3hYTkZWbmY0bHpxNFRieDdwWTlETWdteWMvSDBpQ2ZpVnUwN2JwMXc5aUpTTjBmRHJSRW1LazNjMkMycmxld0d1eDZjTGdyVSsrc08xZlc3Y0hrRkxCcWxBPQ",
+                    "deadline": "1491227806",
+                    "name": "咿呀咿呀哦1",
+                    "headUrl": "http://sinastorage.com/store.games.sina.com.cn/gameapp/head/3853444047d38c65f09295b587908c83.png?v=1459501785",
+                    "birthday": "994435200000",
+                    "sex": 1,
+                    "account": "1251142132",
+                    "accessToken": "2.00oNff3BbPn2YC891e811612LyUNVE"
                 }
             ],
     "message": "请求成功"
