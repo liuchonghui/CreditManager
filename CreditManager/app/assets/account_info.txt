@@ -1,0 +1,44 @@
+{
+    "result": 200,
+    "data": {
+        "accountList": [
+                {
+                    "type": 1,
+                    "guid": "4",
+                    "gtoken": "YitqSFMwQWp6WjJvanVrcEtwQ1U0MVhwVTJTZi9kL3VPeUpGdjJQOTNoR2Q1b1Y0U1ZuV3B4dHdlVjZwSTdmdXBERHZLRytkdTJjYnNBbmdJL29xcmRickJkZW81bnZ1eG5zVWpKU1dtTFliWS9PY3VicDdsM3R3b2EyVDJPYTZnbk5NeTRBUXdDSExnZXAwejNBTHRuaDd1REJ1WVpTQ1JoYnFvdjk3SEJnPQ",
+                    "deadline": "1491210950",
+                    "name": "爆米花正传",
+                    "headUrl": "http://tp1.sinaimg.cn/3198396800/180/5719045223/0",
+                    "birthday": "631123200",
+                    "sex": 2,
+                    "account": "3198396800",
+                    "accessToken": "2.00KHJ9UDbPn2YC607ec349d5XppkaC"
+                },
+                {
+                    "type": 1,
+                    "guid": "54314",
+                    "gtoken": "Y0IyMGZpNVFnWldFV0lCZHcxeXlzTkp0a0tQZ1NEeEp0elljRW9BZTU5dzl0ZDJ5Y3dHeHQxZEN1eGEzUnRQSVZzeURHZWsxU3NWMW9GSFBFdW8wUU43QmZSSGJITHpIMWczakRJZDllV2tJa1h4V1AzT2RyOGc5UFVDMlZmd1l0UXIxc0pkOUQzL3RsamVCYUxVbVdLMTBBSGVGVnhMT0lsSnRDQkVwT0FZPQ",
+                    "deadline": "1491211461",
+                    "name": "丹丹我滴菜",
+                    "headUrl": "http://tp4.sinaimg.cn/5274121423/180/5721424620/0",
+                    "birthday": "631123200000",
+                    "sex": 2,
+                    "account": "5274121423",
+                    "accessToken": "2.00ZufvkFbPn2YCaf1f0028a1mkYRdD"
+                },
+                {
+                    "type": 1,
+                    "guid": "3",
+                    "gtoken": "RXNIZ0pOb3JtTXptZFJsOGlFOXZZd0VCSXJmRFNBUTNrOGVCb0hnb2FaOXFaZHJSQll6RUtrMXgzTjl1WlBFU08xTlgzNnIrVlExck1GY0d0YkVTa0pJUHNXd0ovalU5Mmx4NGFlcngvZzM4N0Y4blNYc0NkT3F6MVJKRVFxb3FoYUI4eHlYRzd2VlFLbVYxV3VQZG5PYWJ1MlZoNFFrNWFuZE13Rk5KbHZnPQ",
+                    "deadline": "1491211622",
+                    "name": "没事就爱找借口",
+                    "headUrl": "http://sinastorage.com/store.games.sina.com.cn/gameapp/head/1c6af9ffec04aaff704373ab840a4816.png?v=1459500678",
+                    "birthday": "586969200000",
+                    "sex": 1,
+                    "account": "2732811515",
+                    "accessToken": "2.00FHbwyCbPn2YC7c1b442deeqS3FJD"
+                }
+            ]
+    },
+    "message": "请求成功",
+}
