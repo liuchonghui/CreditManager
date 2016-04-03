@@ -245,6 +245,8 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
                 intent.putExtra("gtoken", item.getGtoken());
                 intent.putExtra("deadline", item.getDeadline());
                 intent.putExtra("account", item.getAccount());
+                intent.putExtra("accessToken", item.getAccessToken());
+                intent.putExtra("expiresin", item.getExpiresin());
                 getActivity().startActivity(intent);
             }
         }

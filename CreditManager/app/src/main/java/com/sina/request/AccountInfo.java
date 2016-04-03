@@ -1,5 +1,7 @@
 package com.sina.request;
 
+import java.util.Date;
+
 /**
  * Created by liuchonghui on 16/4/3.
  */
@@ -22,6 +24,7 @@ public class AccountInfo extends BaseModel {
     private String sex;
 
     private String score;
+    private long expiresin;
 
     public String getAccount() {
         return account;
@@ -117,5 +120,13 @@ public class AccountInfo extends BaseModel {
 
     public void setScore(String score) {
         this.score = score;
+    }
+
+    public long getExpiresin() {
+        return expiresin;
+    }
+
+    public void setExpiresin(long expiresin) {
+        this.expiresin = expiresin;
     }
 }

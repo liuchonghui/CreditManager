@@ -13,14 +13,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.overlay.RunningEnvironment;
+import com.android.overlay.utils.StringUtils;
 import com.sina.activity.CustomWaitDialog;
+import com.sina.activity.WebViewActivity;
 import com.sina.request.AccountInfo;
 import com.sina.request.FindDataIntegralGameModel;
+import com.sina.request.UserCookieManager;
 import com.sina.sinagame.credit.CreditManager;
+import com.sina.sinagame.credit.OnCookieSetCompleteListener;
 import com.sina.sinagame.credit.OnH5GamesReceivedListener;
 import com.sina.sinagame.credit.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +30,11 @@ import java.util.List;
 /**
  * @author liu_chonghui
  */
-public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedListener {
+public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedListener,
+        OnCookieSetCompleteListener {
 
     protected int getPageLayout() {
-        return R.layout.activity_main;
+        return R.layout.h5_main;
     }
 
     @Override
@@ -41,12 +44,16 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
 
         RunningEnvironment.getInstance().addUIListener(
                 OnH5GamesReceivedListener.class, this);
+        RunningEnvironment.getInstance().addUIListener(
+                OnCookieSetCompleteListener.class, this);
 
         initData();
     }
 
     @Override
     public void onDestroy() {
+        RunningEnvironment.getInstance().removeUIListener(
+                OnCookieSetCompleteListener.class, this);
         RunningEnvironment.getInstance().removeUIListener(
                 OnH5GamesReceivedListener.class, this);
         super.onDestroy();
@@ -66,6 +73,8 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
             mAccountInfo.setGtoken(getActivity().getIntent().getStringExtra("gtoken"));
             mAccountInfo.setDeadline(getActivity().getIntent().getStringExtra("deadline"));
             mAccountInfo.setAccount(getActivity().getIntent().getStringExtra("account"));
+            mAccountInfo.setAccessToken(getActivity().getIntent().getStringExtra("accessToken"));
+            mAccountInfo.setExpiresin(getActivity().getIntent().getLongExtra("expiresin", 1460311190961L));
         }
         if (h5GameList.size() == 0) {
             initRequestData();
@@ -75,6 +84,7 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
     List<FindDataIntegralGameModel> h5GameList = new ArrayList<FindDataIntegralGameModel>();
 
     protected void initRequestData() {
+        UserCookieManager.getInstance().setUserCookie(mAccountInfo);
         CreditManager.getInstance().requestH5Games(mAccountInfo);
     }
 
@@ -91,6 +101,7 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
     }
 
     CustomWaitDialog mUpdateDialog;
+    Button topBtn;
     ListView mListView;
     MyAdapter myAdapter;
 
@@ -99,8 +110,17 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
         mUpdateDialog = new CustomWaitDialog(getActivity());
         mUpdateDialog.setCanceledOnTouchOutside(false);
 
+
         TextView title = (TextView) view.findViewById(R.id.top_text);
         title.setText(mAccountInfo.getName());
+        topBtn = (Button) view.findViewById(R.id.top_btn);
+        topBtn.setEnabled(false);
+        topBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         mListView = (ListView) view.findViewById(R.id.list_layout);
         myAdapter = new MyAdapter();
         myAdapter.setData(h5GameList);
@@ -158,6 +178,8 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
         getActivity().overridePendingTransition(R.anim.push_still,
                 R.anim.push_right_out);
     }
+
+
 
     private class MyAdapter extends BaseAdapter {
         List<FindDataIntegralGameModel> listData = new ArrayList<FindDataIntegralGameModel>();
@@ -230,6 +252,16 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
                 if (item == null) {
                     return;
                 }
+                String url = item.getId();
+                if (url == null || url.length() == 0) {
+                    url = item.getUrl();
+                }
+                if (StringUtils.isWebUrl(url)) {
+                    Intent launchIntent = new Intent(getActivity(), WebViewActivity.class);
+                    launchIntent.putExtra("title", item.getName());
+                    launchIntent.putExtra("url", url);
+                    getActivity().startActivity(launchIntent);
+                }
             }
         }
 
@@ -251,5 +283,16 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
     @Override
     public void onH5GamesReceivedFailure(String message) {
 
+    }
+
+    @Override
+    public void onCookieSetComplete(String guid) {
+        if (topBtn != null) {
+            if (guid.equalsIgnoreCase(this.mAccountInfo.getGuid())) {
+                topBtn.setEnabled(true);
+            } else {
+                topBtn.setEnabled(false);
+            }
+        }
     }
 }
