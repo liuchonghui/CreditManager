@@ -3,6 +3,7 @@ package com.sina.fragment;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.android.overlay.RunningEnvironment;
 import com.android.overlay.utils.StringUtils;
 import com.sina.activity.CustomWaitDialog;
+import com.sina.activity.WebBrowserActivity;
 import com.sina.activity.WebViewActivity;
 import com.sina.request.AccountInfo;
 import com.sina.request.FindDataIntegralGameModel;
@@ -118,7 +120,11 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
         topBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getActivity(), WebBrowserActivity.class);
+                intent.putExtra("title", "积分商城");
+                String recordUrl = "http://jifen.sina.com.cn/h5/app_inner?back_url=http://jifen.sina.com.cn";
+                intent.putExtra("url",recordUrl);
+                getActivity().startActivity(intent);
             }
         });
         mListView = (ListView) view.findViewById(R.id.list_layout);
@@ -257,7 +263,7 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
                     url = item.getUrl();
                 }
                 if (StringUtils.isWebUrl(url)) {
-                    Intent launchIntent = new Intent(getActivity(), WebViewActivity.class);
+                    Intent launchIntent = new Intent(getActivity(), WebBrowserActivity.class);
                     launchIntent.putExtra("title", item.getName());
                     launchIntent.putExtra("url", url);
                     getActivity().startActivity(launchIntent);

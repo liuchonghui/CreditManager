@@ -1,0 +1,74 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ContentDescription"
+    android:layout_width="fill_parent"
+    android:background="#ffffff"
+    android:id="@+id/custom_load_main_layout"
+    android:layout_height="fill_parent">
+    <!-- 加载失败 -->
+    <LinearLayout android:id="@+id/custom_load_fail_button"
+	             android:layout_gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content">
+		 <ImageView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_horizontal"
+	        android:src="@mipmap/load_fail" />
+		 
+		<TextView   android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:textColor="#666666"
+				        android:textSize="17sp"
+				        android:layout_marginTop="10dp"
+				        android:layout_gravity="center_horizontal"
+				        android:text="加载失败，点击再试一次"/>
+    </LinearLayout>
+  
+    <!-- 加载成功 -->
+    <TextView android:id="@+id/custom_load_sucess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:text="加载成功"
+        android:layout_gravity="center"
+        />
+    <!-- 加载中 
+      <ProgressBar
+	        android:id="@+id/custom_load_progress"
+	        android:layout_width="30dp"
+	        android:layout_height="30dp"
+	        android:layout_gravity="center"
+	        android:visibility="gone"
+	        android:indeterminateDrawable="@drawable/progress"
+	        android:indeterminate="true"/>-->
+	 <LinearLayout android:id="@+id/custom_load_progress"
+	             android:layout_gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content">
+		 <ImageView android:id="@+id/custom_load_image_view"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_horizontal"
+	        android:src="@drawable/loading_animation" />
+		 
+		 <TextView   android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:textColor="#666666"
+				        android:textSize="17sp"
+				        android:layout_marginTop="10dp"
+				        android:layout_gravity="center_horizontal"
+				        android:text="请稍后"/>
+      </LinearLayout>
+    <!-- 无数据 -->
+    <include
+        android:id="@+id/custom_load_nodata"
+        android:visibility="gone"
+        layout="@layout/defaultdata" />
+</FrameLayout>
