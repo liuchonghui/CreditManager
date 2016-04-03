@@ -449,10 +449,24 @@ public class CreditManager implements Serializable {
                 if (rmodel != null) {
                     if (rmodel.getPrivilege_list() != null) {
                         giftList.addAll(rmodel.getPrivilege_list());
+                        notifyGiftListReceived();
                     }
                 }
             }
         }
+    }
+
+    protected void notifyGiftListReceived() {
+        RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnGiftListReceivedListener listener : RunningEnvironment
+                        .getInstance().getUIListeners(
+                                OnGiftListReceivedListener.class)) {
+                    listener.onGiftListReceivedSuccess();
+                }
+            }
+        });
     }
 
     public void requestH5Games(AccountInfo info) {

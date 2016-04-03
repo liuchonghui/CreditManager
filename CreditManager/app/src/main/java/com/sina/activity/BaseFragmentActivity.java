@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
+import com.sina.fresco.FrescoManager;
+
 /**
  * activity基类
  *
@@ -16,6 +18,9 @@ public class BaseFragmentActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!FrescoManager.getInstance().isInitialized()) {
+            FrescoManager.getInstance().onStart();
+        }
     }
 
     @Override

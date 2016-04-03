@@ -17,6 +17,7 @@
         <item>com.android.overlay.manager.SettingsManager</item>
         <item>com.sina.sinagame.credit.CreditManager</item>
         <item>com.sina.request.UserCookieManager</item>
+        <item>com.sina.fresco.FrescoManager</item>
     </string-array>
     <string-array name="tables">
     </string-array>

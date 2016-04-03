@@ -2,6 +2,7 @@ package com.sina.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.android.overlay.RunningEnvironment;
 import com.android.overlay.utils.StringUtils;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.sina.activity.CustomWaitDialog;
 import com.sina.activity.WebBrowserActivity;
 import com.sina.activity.WebViewActivity;
@@ -216,7 +218,7 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
         }
 
         protected int getItemLayout() {
-            return R.layout.selectjubao_grid_item;
+            return R.layout.h5_game_item;
         }
 
         @Override
@@ -227,6 +229,7 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
                 holder = new ViewHolder();
                 convertView = LayoutInflater.from(getActivity()).inflate(getItemLayout(), parent, false);
                 holder.layout = (ViewGroup) convertView.findViewById(R.id.item_layout);
+                holder.header = (SimpleDraweeView) convertView.findViewById(R.id.user_header);
                 holder.title = (TextView) convertView.findViewById(R.id.item_title);
                 holder.score = (TextView) convertView.findViewById(R.id.item_score);
                 holder.btn = (Button) convertView.findViewById(R.id.item_btn);
@@ -234,6 +237,9 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
+            }
+            if (model.getPic() != null && model.getPic().length() > 0) {
+                holder.header.setImageURI(Uri.parse(model.getPic()));
             }
             holder.title.setText(model.getName());
             if (model.getScore() != null && model.getScore().length() > 0) {
@@ -273,6 +279,7 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
 
         class ViewHolder {
             ViewGroup layout;
+            SimpleDraweeView header;
             TextView title;
             TextView score;
             Button btn;
