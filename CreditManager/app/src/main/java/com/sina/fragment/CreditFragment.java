@@ -342,6 +342,7 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
         }
         Intent intent = new Intent(getActivity(), H5GameActivity.class);
         intent.putExtra("name", item.getName());
+        intent.putExtra("avatar", item.getHeadUrl());
         intent.putExtra("guid", item.getGuid());
         intent.putExtra("gtoken", item.getGtoken());
         intent.putExtra("deadline", item.getDeadline());

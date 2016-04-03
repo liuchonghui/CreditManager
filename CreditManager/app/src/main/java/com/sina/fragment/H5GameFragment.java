@@ -73,6 +73,7 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
     protected void initData() {
         if (getActivity().getIntent() != null) {
             mAccountInfo.setName(getActivity().getIntent().getStringExtra("name"));
+            mAccountInfo.setHeadUrl(getActivity().getIntent().getStringExtra("avatar"));
             mAccountInfo.setGuid(getActivity().getIntent().getStringExtra("guid"));
             mAccountInfo.setGtoken(getActivity().getIntent().getStringExtra("gtoken"));
             mAccountInfo.setDeadline(getActivity().getIntent().getStringExtra("deadline"));
@@ -114,7 +115,10 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
         mUpdateDialog = new CustomWaitDialog(getActivity());
         mUpdateDialog.setCanceledOnTouchOutside(false);
 
-
+        SimpleDraweeView header = (SimpleDraweeView) view.findViewById(R.id.user_header);
+        if (mAccountInfo.getHeadUrl() != null) {
+            header.setImageURI(Uri.parse(mAccountInfo.getHeadUrl()));
+        }
         TextView title = (TextView) view.findViewById(R.id.top_text);
         title.setText(mAccountInfo.getName());
         topBtn = (Button) view.findViewById(R.id.top_btn);

@@ -9,33 +9,53 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.sina.sinagame.credit.MainActivity">
 
-    <LinearLayout android:id="@+id/top_layout"
+    <RelativeLayout android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
+        <com.facebook.drawee.view.SimpleDraweeView
+            xmlns:fresco="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/user_header"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
+            fresco:placeholderImage="@mipmap/sys_header_icon"
+            fresco:roundAsCircle="true"
+            />
         <TextView android:id="@+id/top_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="选择用户：" />
+            android:paddingLeft="10dp"
+            android:layout_toRightOf="@+id/user_header"
+            android:layout_centerVertical="true"
+            android:text="用户名称" />
         <Button android:id="@+id/top_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/top_btn1"
             android:paddingLeft="10dp"
             android:textSize="14sp"
             android:text="签到"/>
         <Button android:id="@+id/top_btn1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/top_btn2"
             android:paddingLeft="10dp"
             android:textSize="14sp"
             android:text="任务"/>
         <Button android:id="@+id/top_btn2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:paddingLeft="10dp"
             android:textSize="14sp"
             android:text="转盘"/>
-    </LinearLayout>
+    </RelativeLayout>
 
     <ListView android:id="@+id/list_layout"
         android:paddingTop="10dp"
