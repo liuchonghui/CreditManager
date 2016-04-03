@@ -23,6 +23,18 @@
             android:paddingLeft="10dp"
             android:textSize="14sp"
             android:text="签到"/>
+        <Button android:id="@+id/top_btn1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:textSize="14sp"
+            android:text="任务"/>
+        <Button android:id="@+id/top_btn2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:textSize="14sp"
+            android:text="转盘"/>
     </LinearLayout>
 
     <ListView android:id="@+id/list_layout"

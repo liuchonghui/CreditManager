@@ -125,6 +125,28 @@ public class H5GameFragment extends BaseFragment implements OnH5GamesReceivedLis
                 Intent intent = new Intent(getActivity(), WebBrowserActivity.class);
                 intent.putExtra("title", "积分商城");
                 String recordUrl = "http://jifen.sina.com.cn/h5/app_inner?back_url=http://jifen.sina.com.cn";
+                intent.putExtra("url", recordUrl);
+                getActivity().startActivity(intent);
+            }
+        });
+        Button btn1 = (Button) view.findViewById(R.id.top_btn1);
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), WebBrowserActivity.class);
+                intent.putExtra("title", "广告任务");
+                String recordUrl = "http://jifen.sina.com.cn/task?back_url=http://jifen.sina.com.cn";
+                intent.putExtra("url",recordUrl);
+                getActivity().startActivity(intent);
+            }
+        });
+        Button btn2 = (Button) view.findViewById(R.id.top_btn2);
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), WebBrowserActivity.class);
+                intent.putExtra("title", "转盘抽奖");
+                String recordUrl = "http://jifen.sina.com.cn/hd/draw?qq-pf-to=pcqq.group?back_url=http://jifen.sina.com.cn";
                 intent.putExtra("url",recordUrl);
                 getActivity().startActivity(intent);
             }
