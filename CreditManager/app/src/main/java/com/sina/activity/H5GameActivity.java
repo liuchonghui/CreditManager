@@ -11,6 +11,7 @@ import com.sina.fragment.H5GameFragment;
 import com.sina.sinagame.credit.R;
 
 /**
+ *
  * @author liu_chonghui
  */
 public class H5GameActivity extends BaseFragmentActivity {
