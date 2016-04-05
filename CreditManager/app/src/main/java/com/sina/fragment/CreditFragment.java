@@ -17,6 +17,10 @@ import com.android.overlay.RunningEnvironment;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.sina.activity.CustomWaitDialog;
 import com.sina.activity.H5GameActivity;
+import com.sina.engine.base.enums.HttpTypeEnum;
+import com.sina.engine.base.enums.ReturnDataClassTypeEnum;
+import com.sina.engine.base.request.options.RequestOptions;
+import com.sina.engine.base.utils.LogUtils;
 import com.sina.request.AccountInfo;
 import com.sina.sinagame.credit.CreditManager;
 import com.sina.sinagame.credit.OnAccountIntegralReceivedListener;
@@ -139,7 +143,8 @@ public class CreditFragment extends BaseFragment implements
                     if (info == null || info.getGuid() == null) {
                         continue;
                     }
-                    CreditManager.getInstance().getCredits(info);
+                    CreditManager.getInstance().getSinaGameCredits(info);
+                    CreditManager.getInstance().get973Integrals(info);
                 }
             }
         });
@@ -299,6 +304,7 @@ public class CreditFragment extends BaseFragment implements
                 if (item == null) {
                     return;
                 }
+                CreditManager.getInstance().get973Integrals(item);
             }
         }
 
@@ -314,7 +320,7 @@ public class CreditFragment extends BaseFragment implements
                 if (item == null) {
                     return;
                 }
-                CreditManager.getInstance().getCredits(item);
+                CreditManager.getInstance().getSinaGameCredits(item);
             }
         }
 
@@ -440,5 +446,4 @@ public class CreditFragment extends BaseFragment implements
             }
         }
     }
-
 }

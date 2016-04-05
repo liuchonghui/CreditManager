@@ -3,14 +3,11 @@ package com.sina.sinagame.credit;
 import com.alibaba.fastjson.JSON;
 import com.android.overlay.RunningEnvironment;
 import com.android.overlay.utils.StringUtils;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.sina.engine.base.enums.HttpTypeEnum;
 import com.sina.engine.base.enums.ReturnDataClassTypeEnum;
-import com.sina.engine.base.request.interfaces.DbLogicInterface;
 import com.sina.engine.base.request.listener.RequestDataListener;
 import com.sina.engine.base.request.model.TaskModel;
 import com.sina.engine.base.request.options.RequestOptions;
-import com.sina.engine.base.utils.LogUtils;
 import com.sina.request.AccountInfo;
 import com.sina.request.AccountInfoRequestModel;
 import com.sina.request.AdditionInfo;
@@ -224,7 +221,26 @@ public class CreditManager implements Serializable {
 
     public static final String shareAppId = "133"; // "分享App"
 
-    public synchronized void getCredits(final AccountInfo info) {
+    @Deprecated
+    public static final String integralTaskId973 = "1001"; // "签到"Ver1.0.0
+
+    public static final String shareTaskId973 = "1002"; // "分享""Ver1.0.0
+
+    public static final String commentTaskId973 = "1003"; // "评论""Ver1.0.0
+
+    @Deprecated
+    public static final String attenGameTaskId973 = "1004"; // "关注游戏""Ver1.0.0
+
+    @Deprecated
+    public static final String fetchGiftTaskId973 = "1005"; // "领取礼包""Ver1.0.0
+
+    public static final String forumTaskId973 = "1006"; // "查看论坛""Ver1.1.0
+
+    public static final String evaluateTaskId973 = "1007"; // "查看新闻评测""Ver1.1.0
+
+    public static final String launchTaskId973 = "1008"; // "开启应用""Ver1.1.0
+
+    public synchronized void getSinaGameCredits(final AccountInfo info) {
         if (info == null || info.getGuid() == null) {
             return;
         }
@@ -275,6 +291,57 @@ public class CreditManager implements Serializable {
         }).start();
     }
 
+    public synchronized void get973Integrals(final AccountInfo info) {
+        if (info == null || info.getAccount() == null) {
+            return;
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // 开启应用
+                submitAccountOperation(info, launchTaskId973, launchTaskId973);
+
+                // 分享详情973页面
+                // 评论详情973页面
+                if (newsList != null) {
+                    for (HomeTopNewsModel news : newsList) {
+                        if (news == null || news.getAbsId() == null) {
+                            continue;
+                        }
+                        try {
+                            Thread.sleep(300L);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        submitAccountOperation(info, shareTaskId973, news.getAbsId());
+                        try {
+                            Thread.sleep(300L);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        submitAccountOperation(info, commentTaskId973, news.getAbsId()); //ok
+                    }
+                }
+
+                // 973查看论坛
+                try {
+                    Thread.sleep(300L);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                submitAccountOperation(info, forumTaskId973, forumTaskId973);
+
+                // 973查看评测
+                try {
+                    Thread.sleep(300L);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                submitAccountOperation(info, evaluateTaskId973, evaluateTaskId973);
+            }
+        }).start();
+    }
+
     protected String parseShareAddInfo(PlatformType type) {
         if (PlatformType.SinaWeibo == type) {
             return "weibo";
@@ -311,6 +378,22 @@ public class CreditManager implements Serializable {
             taskName = "分享详情";
         } else if (commentTaskId.equalsIgnoreCase(taskId)) {
             taskName = "评论详情";
+        } else if (integralTaskId973.equalsIgnoreCase(taskId)) {
+            taskName = "973签到";
+        } else if (shareTaskId973.equalsIgnoreCase(taskId)) {
+            taskName = "973分享";
+        } else if (commentTaskId973.equalsIgnoreCase(taskId)) {
+            taskName = "973评论";
+        } else if (attenGameTaskId973.equalsIgnoreCase(taskId)) {
+            taskName = "973关注游戏";
+        } else if (fetchGiftTaskId973.equalsIgnoreCase(taskId)) {
+            taskName = "973领取礼包";
+        } else if (forumTaskId973.equalsIgnoreCase(taskId)) {
+            taskName = "973查看论坛";
+        } else if (evaluateTaskId973.equalsIgnoreCase(taskId)) {
+            taskName = "973查看评测";
+        } else if (launchTaskId973.equalsIgnoreCase(taskId)) {
+            taskName = "973开启应用";
         }
         return taskName;
     }
@@ -652,7 +735,7 @@ public class CreditManager implements Serializable {
     }
 
     protected void notifyAccountIntegralResult(final boolean success, final String message,
-                                            final String account, final String integral) {
+                                               final String account, final String integral) {
         RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -667,5 +750,101 @@ public class CreditManager implements Serializable {
                 }
             }
         });
+    }
+
+    public void submitAccountOperation(AccountInfo info, String taskId, String newsId) {
+        if (info == null || info.getAccount() == null || taskId == null
+                || taskId.length() == 0) {
+            return;
+        }
+        String requestDomainName = SINA973_DOMAIN_NAME;
+        String requestPhpName = "userApi.php";
+        String requestAction = "addRecode";
+        AccountInfoRequestModel accountInfoRequestModel = new AccountInfoRequestModel(
+                requestDomainName, requestPhpName);
+        accountInfoRequestModel.setAction(requestAction);
+        accountInfoRequestModel.setUid(info.getAccount());
+        accountInfoRequestModel.setTaskId(taskId);
+
+        RequestOptions requestOptions = new Sina973RequestOptions()
+                .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
+                .setIsSaveMemory(false).setIsSaveDb(false)
+                .setReturnDataClassTypeEnum(ReturnDataClassTypeEnum.object)
+                .setReturnModelClass(CreditData.class);
+
+        ReuqestDataProcess.requestData(true, accountInfoRequestModel,
+                requestOptions, new AddIntegralRequestResult(info, taskId,
+                        newsId), null);
+    }
+
+    class AddIntegralRequestResult implements RequestDataListener {
+        AccountInfo info;
+        String taskId;
+        String newsId;
+
+        public AddIntegralRequestResult(AccountInfo info, String taskId, String newsId) {
+            this.info = info;
+            this.taskId = taskId;
+            this.newsId = newsId;
+        }
+
+        @Override
+        public void resultCallBack(TaskModel taskModel) {
+            boolean iscatched = false;
+            boolean iswarnning = false;
+            if (String.valueOf(HttpStatus.SC_OK).equalsIgnoreCase(
+                    taskModel.getResult())) {
+                iscatched = true;
+            } else if (String.valueOf(-100).equalsIgnoreCase(
+                    taskModel.getResult())) {
+                if (taskModel.getMessage() != null
+                        && taskModel.getMessage().contains("超出每天上限")) {
+                    iscatched = true;
+                    iswarnning = true;
+                }
+            }
+            String result = taskModel == null ? null : taskModel.getResult();
+            String message = taskModel == null ? null : taskModel.getMessage();
+            if (message == null || message.length() == 0) {
+                message = "未知错误";
+            }
+            String head = parseTaskName(taskId, null);
+            message = head + message;
+            if (!iscatched) {
+                onAddIntegralFailure(info, message);
+            } else {
+                if (iswarnning) {
+                    onAddIntegralEmpty(info, message);
+                } else {
+                    onAddIntegralSuccess(info, taskId, newsId);
+                }
+            }
+        }
+    }
+
+    protected void onAddIntegralFailure(final AccountInfo info, final String message) {
+        RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+//                new CustomToastDialog(RunningEnvironment.getInstance()
+//                        .getApplicationContext()).setWaitTitle(message)
+//                        .showMe();
+            }
+        });
+    }
+
+    protected void onAddIntegralEmpty(final AccountInfo info, final String message) {
+        RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+//                new CustomToastDialog(RunningEnvironment.getInstance()
+//                        .getApplicationContext()).setWaitTitle(message)
+//                        .showMe();
+            }
+        });
+    }
+
+    protected void onAddIntegralSuccess(AccountInfo info, String taskId, String newsId) {
+        requestAccountIntegral(info.getAccount());
     }
 }
