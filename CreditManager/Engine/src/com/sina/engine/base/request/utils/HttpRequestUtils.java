@@ -196,14 +196,15 @@ public class HttpRequestUtils {
 		String signkey = config.getSignKey();
 		
 		if(TextUtils.isEmpty(signkey)){
-			signkey = "";
+			signkey = taskModel.getRequestOptions().getKeyStr();
 		}
 		String getSign = sign+signkey;
 		
 		LogUtils.d(Constant.ENGINE_REQUEST_LOG_TAG, "sign ="+getSign);
-		getSign = MD5Utils.encode(getSign);
-		if(config.getIsEncrypt()){
+		if(taskModel.getRequestOptions().getIsEncrypt()){
 			getSign = EpUtils.getEpStr(EngineManager.getInstance().getContext(), taskModel, sign);
+		} else {
+			getSign = MD5Utils.encode(getSign);
 		}
 		
 		LogUtils.d(Constant.ENGINE_REQUEST_LOG_TAG, "md5 sign="+getSign);

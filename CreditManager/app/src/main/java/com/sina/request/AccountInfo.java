@@ -25,6 +25,7 @@ public class AccountInfo extends BaseModel {
 
     private String score;
     private long expiresin;
+    private String integral;
 
     public String getAccount() {
         return account;
@@ -128,5 +129,13 @@ public class AccountInfo extends BaseModel {
 
     public void setExpiresin(long expiresin) {
         this.expiresin = expiresin;
+    }
+
+    public String getIntegral() {
+        return integral;
+    }
+
+    public void setIntegral(String integral) {
+        this.integral = integral;
     }
 }

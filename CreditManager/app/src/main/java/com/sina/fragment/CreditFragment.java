@@ -19,9 +19,11 @@ import com.sina.activity.CustomWaitDialog;
 import com.sina.activity.H5GameActivity;
 import com.sina.request.AccountInfo;
 import com.sina.sinagame.credit.CreditManager;
+import com.sina.sinagame.credit.OnAccountIntegralReceivedListener;
 import com.sina.sinagame.credit.OnAccountListReceivedListener;
 import com.sina.sinagame.credit.OnAccountScoreReceivedListener;
 import com.sina.sinagame.credit.OnGiftListReceivedListener;
+import com.sina.sinagame.credit.OnNewsListReceivedListener;
 import com.sina.sinagame.credit.R;
 
 import java.util.ArrayList;
@@ -30,8 +32,9 @@ import java.util.List;
 /**
  * @author liu_chonghui
  */
-public class CreditFragment extends BaseFragment implements OnAccountScoreReceivedListener,
-        OnGiftListReceivedListener {
+public class CreditFragment extends BaseFragment implements
+        OnAccountScoreReceivedListener, OnAccountIntegralReceivedListener,
+        OnGiftListReceivedListener, OnNewsListReceivedListener {
 
     protected int getPageLayout() {
         return R.layout.activity_main;
@@ -45,7 +48,11 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
         RunningEnvironment.getInstance().addUIListener(
                 OnAccountScoreReceivedListener.class, this);
         RunningEnvironment.getInstance().addUIListener(
+                OnAccountIntegralReceivedListener.class, this);
+        RunningEnvironment.getInstance().addUIListener(
                 OnGiftListReceivedListener.class, this);
+        RunningEnvironment.getInstance().addUIListener(
+                OnNewsListReceivedListener.class, this);
 
         initData();
     }
@@ -53,7 +60,11 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
     @Override
     public void onDestroy() {
         RunningEnvironment.getInstance().removeUIListener(
+                OnNewsListReceivedListener.class, this);
+        RunningEnvironment.getInstance().removeUIListener(
                 OnGiftListReceivedListener.class, this);
+        RunningEnvironment.getInstance().removeUIListener(
+                OnAccountIntegralReceivedListener.class, this);
         RunningEnvironment.getInstance().removeUIListener(
                 OnAccountScoreReceivedListener.class, this);
         super.onDestroy();
@@ -76,7 +87,9 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
     boolean accountListReceived = false;
 
     protected void initRequestData() {
-        CreditManager.getInstance().requestGiftListData();
+        CreditManager.getInstance().requestGiftListData(); // 获取新浪游戏礼包列表
+        CreditManager.getInstance().requestNewsListData(); // 获取973咨询列表
+
         CreditManager.getInstance().requestAccountList(new OnAccountListReceivedListener() {
             @Override
             public void onAccountListReceivedSuccess(List<AccountInfo> accountInfos) {
@@ -238,10 +251,13 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
                 holder.layout = (ViewGroup) convertView.findViewById(R.id.item_layout);
                 holder.header = (SimpleDraweeView) convertView.findViewById(R.id.user_header);
                 holder.title = (TextView) convertView.findViewById(R.id.item_title);
-                holder.score = (TextView) convertView.findViewById(R.id.item_score);
+                holder.score_sinagame = (TextView) convertView.findViewById(R.id.score_sinagame);
+                holder.score_973 = (TextView) convertView.findViewById(R.id.score_973);
                 holder.btn = (Button) convertView.findViewById(R.id.item_btn);
+                holder.btn1 = (Button) convertView.findViewById(R.id.item_btn1);
                 holder.btn2 = (Button) convertView.findViewById(R.id.item_btn2);
                 holder.listener = new ItemClickListener();
+                holder.jclistener = new JiuCaiHuaClickListener();
                 holder.h5listener = new H5ClickListener();
                 convertView.setTag(holder);
             } else {
@@ -252,12 +268,16 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
             }
             holder.title.setText(model.getName());
             if (model.getScore() != null && model.getScore().length() > 0) {
-                holder.score.setText(model.getScore());
+                holder.score_sinagame.setText(model.getScore());
+            }
+            if (model.getIntegral() != null && model.getIntegral().length() > 0) {
+                holder.score_973.setText(model.getIntegral());
             }
             holder.listener.setData(model);
             holder.btn.setOnClickListener(holder.listener);
+            holder.jclistener.setData(model);
+            holder.btn1.setOnClickListener(holder.jclistener);
             holder.h5listener.setData(model);
-            holder.btn2.setVisibility(View.VISIBLE);
             holder.btn2.setOnClickListener(holder.h5listener);
 
             return convertView;
@@ -270,6 +290,15 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
                     return;
                 }
                 gotoH5GamePage(item);
+            }
+        }
+
+        class JiuCaiHuaClickListener extends ItemClickListener {
+            @Override
+            public void onClick(View view) {
+                if (item == null) {
+                    return;
+                }
             }
         }
 
@@ -293,10 +322,13 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
             ViewGroup layout;
             SimpleDraweeView header;
             TextView title;
-            TextView score;
+            TextView score_sinagame;
+            TextView score_973;
             Button btn;
+            Button btn1;
             Button btn2;
             ItemClickListener listener;
+            ItemClickListener jclistener;
             ItemClickListener h5listener;
         }
     }
@@ -315,24 +347,8 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
             if (id.equalsIgnoreCase(info.getGuid())) {
                 CreditManager.getInstance().requestAccountScore(info.getGuid(),
                         info.getGtoken(), info.getDeadline(), info.getAccount());
+                CreditManager.getInstance().requestAccountIntegral(info.getAccount());
             }
-        }
-    }
-
-    @Override
-    public void onAccountScoreReceivedSuccess(String userId, String score) {
-        boolean modified = false;
-        for (AccountInfo info : accountList) {
-            if (info == null || info.getGuid() == null) {
-                continue;
-            }
-            if (info.getGuid().equalsIgnoreCase(userId)) {
-                modified = true;
-                info.setScore(score);
-            }
-        }
-        if (modified) {
-            flushPage();
         }
     }
 
@@ -353,7 +369,46 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
     }
 
     @Override
+    public void onAccountScoreReceivedSuccess(String userId, String score) {
+        boolean modified = false;
+        for (AccountInfo info : accountList) {
+            if (info == null || info.getGuid() == null) {
+                continue;
+            }
+            if (info.getGuid().equalsIgnoreCase(userId)) {
+                modified = true;
+                info.setScore(score);
+            }
+        }
+        if (modified) {
+            flushPage();
+        }
+    }
+
+    @Override
     public void onAccountScoreReceivedFailure(String message) {
+
+    }
+
+    @Override
+    public void onAccountIntegralReceivedSuccess(String account, String integral) {
+        boolean modified = false;
+        for (AccountInfo info : accountList) {
+            if (info == null || info.getAccount() == null) {
+                continue;
+            }
+            if (info.getAccount().equalsIgnoreCase(account)) {
+                modified = true;
+                info.setIntegral(integral);
+            }
+        }
+        if (modified) {
+            flushPage();
+        }
+    }
+
+    @Override
+    public void onAccountIntegralReceivedFailure(String message) {
 
     }
 
@@ -365,16 +420,25 @@ public class CreditFragment extends BaseFragment implements OnAccountScoreReceiv
         flushButton();
     }
 
+    boolean newsListReceived = false;
+
+    @Override
+    public void onNewsListReceivedSuccess() {
+        newsListReceived = true;
+        flushButton();
+    }
+
     protected void flushButton() {
         if (mButton != null) {
             if (mButton.isEnabled()) {
                 return;
             }
-            if (accountListReceived && giftListReceived) {
+            if (accountListReceived && giftListReceived && newsListReceived) {
                 mButton.setEnabled(true);
             } else {
                 mButton.setEnabled(false);
             }
         }
     }
+
 }

@@ -3,11 +3,14 @@ package com.sina.sinagame.credit;
 import com.alibaba.fastjson.JSON;
 import com.android.overlay.RunningEnvironment;
 import com.android.overlay.utils.StringUtils;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.sina.engine.base.enums.HttpTypeEnum;
 import com.sina.engine.base.enums.ReturnDataClassTypeEnum;
+import com.sina.engine.base.request.interfaces.DbLogicInterface;
 import com.sina.engine.base.request.listener.RequestDataListener;
 import com.sina.engine.base.request.model.TaskModel;
 import com.sina.engine.base.request.options.RequestOptions;
+import com.sina.engine.base.utils.LogUtils;
 import com.sina.request.AccountInfo;
 import com.sina.request.AccountInfoRequestModel;
 import com.sina.request.AdditionInfo;
@@ -15,8 +18,12 @@ import com.sina.request.CreditData;
 import com.sina.request.FindDataIntegralGameModel;
 import com.sina.request.GiftDataAllModel;
 import com.sina.request.GiftDataModel;
+import com.sina.request.HomeDataModel;
+import com.sina.request.HomeDataRequestModel;
+import com.sina.request.HomeTopNewsModel;
 import com.sina.request.PlatformType;
 import com.sina.request.ReuqestDataProcess;
+import com.sina.request.Sina973RequestOptions;
 import com.sina.request.SinaGameRequestOptions;
 import com.sina.request.UserGiftListRequestModel;
 
@@ -33,6 +40,7 @@ public class CreditManager implements Serializable {
 
     protected static CreditManager instance;
     protected List<GiftDataModel> giftList;
+    protected List<HomeTopNewsModel> newsList;
 
     static {
         instance = new CreditManager();
@@ -45,6 +53,7 @@ public class CreditManager implements Serializable {
 
     protected CreditManager() {
         giftList = new ArrayList<GiftDataModel>();
+        newsList = new ArrayList<HomeTopNewsModel>();
     }
 
     public void requestAccountList(OnAccountListReceivedListener l) {
@@ -118,8 +127,11 @@ public class CreditManager implements Serializable {
         });
     }
 
-    public static final String DOMAIN_NAME = "http://gameapi.g.sina.com.cn/game_api/";
-    public static final String NEW_DOMAIN_NAME = "http://gameapi.g.sina.com.cn/app/games/api/";
+    public static final String SINAGAME_DOMAIN_NAME = "http://gameapi.g.sina.com.cn/game_api/";
+    public static final String SINAGAME_NEW_DNAME = "http://gameapi.g.sina.com.cn/app/games/api/";
+
+    public static final String SINA973_DOMAIN_NAME = "http://gameapi.g.sina.com.cn/97973_api/";
+
 
     public void requestAccountScore(String guid, String token, String deadline, String uid) {
         if (guid == null || guid.length() == 0) {
@@ -134,7 +146,7 @@ public class CreditManager implements Serializable {
         if (uid == null || uid.length() == 0) {
             return;
         }
-        String requestDomainName = DOMAIN_NAME;
+        String requestDomainName = SINAGAME_DOMAIN_NAME;
         String requestPhpName = "userApi.php";
         String requestAction = "userInfo";
 
@@ -309,7 +321,7 @@ public class CreditManager implements Serializable {
                 || taskId.length() == 0 || newsId == null) {
             return;
         }
-        String requestDomainName = DOMAIN_NAME;
+        String requestDomainName = SINAGAME_DOMAIN_NAME;
         String requestPhpName = "recodeApi.php";
         String requestAction = "add";
 
@@ -418,7 +430,7 @@ public class CreditManager implements Serializable {
     }
 
     public void requestGiftListData() {
-        String requestDomainName = DOMAIN_NAME;
+        String requestDomainName = SINAGAME_DOMAIN_NAME;
         String requestPhpName = "giftApi.php";
         String requestAction = "recommendList";
         UserGiftListRequestModel userGiftListRequestModel = new UserGiftListRequestModel(
@@ -474,7 +486,7 @@ public class CreditManager implements Serializable {
         if (info == null || info.getGuid() == null) {
 
         }
-        String requestDomainName = NEW_DOMAIN_NAME;
+        String requestDomainName = SINAGAME_NEW_DNAME;
         String requestPhpName = "cf/game_list";
 
         AccountInfoRequestModel requestModel = new AccountInfoRequestModel(requestDomainName,
@@ -532,6 +544,125 @@ public class CreditManager implements Serializable {
                         listener.onH5GamesReceivedSuccess(guid, games);
                     } else {
                         listener.onH5GamesReceivedFailure(message);
+                    }
+                }
+            }
+        });
+    }
+
+    public void requestNewsListData() {
+        String requestDomainName = SINA973_DOMAIN_NAME;
+        String requestPhpName = "newsApi.php";
+        String requestAction = "newMainList";
+
+        RequestOptions requestOptions = new Sina973RequestOptions()
+                .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
+                .setIsSaveMemory(false).setIsSaveDb(false)
+                .setReturnDataClassTypeEnum(ReturnDataClassTypeEnum.object)
+                .setReturnModelClass(HomeDataModel.class);
+
+        HomeDataRequestModel requestModel = new HomeDataRequestModel(
+                requestDomainName, requestPhpName);
+        requestModel.setAction(requestAction);
+        requestModel.setCount(10);
+        requestModel.setPage(1);
+        ReuqestDataProcess.requestData(true, 1, requestModel,
+                requestOptions, new NewsListRequestListener(), null);
+    }
+
+    class NewsListRequestListener implements RequestDataListener {
+
+        public NewsListRequestListener() {
+        }
+
+        @Override
+        public void resultCallBack(TaskModel taskModel) {
+            if (taskModel.getReturnModel() != null) {
+                HomeDataModel rmodel = (HomeDataModel) taskModel.getReturnModel();
+                if (rmodel != null) {
+                    if (rmodel.getTopNews() != null) {
+                        newsList.addAll(rmodel.getTopNews());
+                        notifyNewsListReceived();
+                    }
+                }
+            }
+        }
+    }
+
+    protected void notifyNewsListReceived() {
+        RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnNewsListReceivedListener listener : RunningEnvironment
+                        .getInstance().getUIListeners(
+                                OnNewsListReceivedListener.class)) {
+                    listener.onNewsListReceivedSuccess();
+                }
+            }
+        });
+    }
+
+    public void requestAccountIntegral(String uid) {
+        if (uid == null || uid.length() == 0) {
+            return;
+        }
+        String requestDomainName = SINA973_DOMAIN_NAME;
+        String requestPhpName = "userApi.php";
+        String requestAction = "userInfo";
+        AccountInfoRequestModel accountInfoRequestModel = new AccountInfoRequestModel(
+                requestDomainName, requestPhpName);
+        accountInfoRequestModel.setAction(requestAction);
+        accountInfoRequestModel.setUid(uid);
+
+        RequestOptions requestOptions = new Sina973RequestOptions()
+                .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
+                .setIsSaveMemory(false).setIsSaveDb(false)
+                .setMemoryLifeTime(120)
+                .setReturnDataClassTypeEnum(ReturnDataClassTypeEnum.object)
+                .setReturnModelClass(AccountInfo.class);
+
+        ReuqestDataProcess.requestData(true, accountInfoRequestModel,
+                requestOptions, new AccountIntegralRequestResult(uid), null);
+    }
+
+    class AccountIntegralRequestResult implements RequestDataListener {
+        String uid;
+
+        public AccountIntegralRequestResult(String uid) {
+            this.uid = uid;
+        }
+
+        @Override
+        public void resultCallBack(TaskModel taskModel) {
+            AccountInfo retModel = null;
+            boolean success = false;
+            String message = taskModel.getMessage();
+            if (taskModel.getReturnModel() != null) {
+                retModel = (AccountInfo) taskModel.getReturnModel();
+                if (retModel != null) {
+                    if (String.valueOf(HttpStatus.SC_OK).equalsIgnoreCase(
+                            taskModel.getResult())) {
+                        retModel.setAccount(uid);
+                        success = true;
+                    }
+                }
+            }
+            notifyAccountIntegralResult(success, message, uid, retModel.getIntegral());
+        }
+    }
+
+    protected void notifyAccountIntegralResult(final boolean success, final String message,
+                                            final String account, final String integral) {
+        RunningEnvironment.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnAccountIntegralReceivedListener listener : RunningEnvironment
+                        .getInstance().getUIListeners(
+                                OnAccountIntegralReceivedListener.class)) {
+                    if (success) {
+                        listener.onAccountIntegralReceivedSuccess(account, integral);
+                    } else {
+                        listener.onAccountIntegralReceivedFailure(message);
                     }
                 }
             }

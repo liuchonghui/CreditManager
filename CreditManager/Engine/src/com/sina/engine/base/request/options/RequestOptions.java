@@ -40,6 +40,7 @@ public class RequestOptions{
 	private String versionCode;
 	private String sn;
 	private String keyStr;
+	private boolean isEncrypt;
 
 	public RequestOptions(){
 		
@@ -241,6 +242,15 @@ public class RequestOptions{
 
 	public RequestOptions setKeyStr(String keyStr) {
 		this.keyStr = keyStr;
+		return this;
+	}
+
+	public boolean getIsEncrypt() {
+		return isEncrypt;
+	}
+
+	public RequestOptions setIsEncrypt(boolean isEncrypt) {
+		this.isEncrypt = isEncrypt;
 		return this;
 	}
 }

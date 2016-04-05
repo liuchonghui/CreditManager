@@ -11,5 +11,6 @@ public class SinaGameRequestOptions extends RequestOptions {
         setVersionName("5.0");
         setSn("1020981062");
         setKeyStr("0fe1ed9affcdd242451d9883f506a3dd");
+        setIsEncrypt(true);
     }
 }
