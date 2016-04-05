@@ -17,6 +17,7 @@ import com.sina.request.GiftDataAllModel;
 import com.sina.request.GiftDataModel;
 import com.sina.request.PlatformType;
 import com.sina.request.ReuqestDataProcess;
+import com.sina.request.SinaGameRequestOptions;
 import com.sina.request.UserGiftListRequestModel;
 
 import org.apache.http.HttpStatus;
@@ -55,7 +56,7 @@ public class CreditManager implements Serializable {
                 requestDomainName, requestPhpName);
         accountInfoRequestModel.setAction(requestAction);
 
-        RequestOptions requestOptions = new RequestOptions()
+        RequestOptions requestOptions = new SinaGameRequestOptions()
                 .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
                 .setIsSaveMemory(false).setIsSaveDb(false)
                 .setMemoryLifeTime(120)
@@ -146,7 +147,7 @@ public class CreditManager implements Serializable {
         accountInfoRequestModel.setUid(uid);
         accountInfoRequestModel.setFrom(nextID());
 
-        RequestOptions requestOptions = new RequestOptions()
+        RequestOptions requestOptions = new SinaGameRequestOptions()
                 .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
                 .setIsSaveMemory(false).setIsSaveDb(false)
                 .setMemoryLifeTime(120)
@@ -332,7 +333,7 @@ public class CreditManager implements Serializable {
         accountInfoRequestModel.setAdditionInfo(additionInfo);
         accountInfoRequestModel.setFrom(nextID());
 
-        RequestOptions requestOptions = new RequestOptions()
+        RequestOptions requestOptions = new SinaGameRequestOptions()
                 .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
                 .setIsSaveMemory(false).setIsSaveDb(false)
                 .setMemoryLifeTime(120)
@@ -426,7 +427,7 @@ public class CreditManager implements Serializable {
         userGiftListRequestModel.setCount(10);
         userGiftListRequestModel.setPage(1);
         userGiftListRequestModel.setType("0");
-        RequestOptions requestOptions = new RequestOptions()
+        RequestOptions requestOptions = new SinaGameRequestOptions()
                 .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
                 .setIsSaveMemory(false).setIsSaveDb(false)
                 .setReturnDataClassTypeEnum(ReturnDataClassTypeEnum.generic)
@@ -482,7 +483,7 @@ public class CreditManager implements Serializable {
         requestModel.setGtoken(info.getGtoken());
         requestModel.setDeadline(info.getDeadline());
 
-        RequestOptions requestOptions = new RequestOptions()
+        RequestOptions requestOptions = new SinaGameRequestOptions()
                 .setHttpRequestType(HttpTypeEnum.get).setIsMainThread(false)
                 .setIsSaveMemory(false).setIsSaveDb(false)
                 .setMemoryLifeTime(120)

@@ -38,10 +38,10 @@ public class MainApplication extends Application {
         EngineManager.init(this);
         EngineManager.getInstance().initConfig(new EngineConfig().setIsEncrypt(true)
                 .setDebug(true)
-                .setCid("0")
+//                .setCid("0")
+//                .setPartner_id("10001")
                 .setDeviceId("355dbee81a5f1709d905a31c56b72ab15")
-                .setJsonFetcherFactory(new OkHttpJsonFetcherFactory())
-                .setPartner_id("10001"));
+                .setJsonFetcherFactory(new OkHttpJsonFetcherFactory()));
 
 
         subSystem.run(this);

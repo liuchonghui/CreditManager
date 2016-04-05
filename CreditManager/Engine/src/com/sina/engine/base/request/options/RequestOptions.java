@@ -34,6 +34,13 @@ public class RequestOptions{
 
 	private JsonFetcher fetcher;
 
+	private String cid;
+	private String partner_id;
+	private String versionName;
+	private String versionCode;
+	private String sn;
+	private String keyStr;
+
 	public RequestOptions(){
 		
 	}
@@ -51,7 +58,9 @@ public class RequestOptions{
 		        .setHttpRequestMethod(EngineManager.getInstance().getEngineConfig().
 		        		getHttpMethodForAll())
 				.setJsonFetcher(EngineManager.getInstance().getEngineConfig()
-						.getJsonFetcherFactory().newJsonFetcher());
+						.getJsonFetcherFactory().newJsonFetcher())
+				.setCid(EngineManager.getInstance().getEngineConfig().getCid())
+				.setPartner_id(EngineManager.getInstance().getEngineConfig().getPartner_id());
 		return requestOptions;
 	}
 	
@@ -179,5 +188,59 @@ public class RequestOptions{
 					.getJsonFetcherFactory().newJsonFetcher();
 		}
 		return this.fetcher;
+	}
+
+	public String getPartner_id() {
+		return partner_id;
+	}
+
+	public RequestOptions setPartner_id(String partner_id) {
+		this.partner_id = partner_id;
+		return this;
+	}
+
+	public String getCid() {
+		return cid;
+	}
+
+	public RequestOptions setCid(String cid) {
+		this.cid = cid;
+		return this;
+	}
+
+	public String getVersionName() {
+		return versionName;
+	}
+
+	public RequestOptions setVersionName(String versionName) {
+		this.versionName = versionName;
+		return this;
+	}
+
+	public String getVersionCode() {
+		return versionCode;
+	}
+
+	public RequestOptions setVersionCode(String versionCode) {
+		this.versionCode = versionCode;
+		return this;
+	}
+
+	public String getSn() {
+		return sn;
+	}
+
+	public RequestOptions setSn(String sn) {
+		this.sn = sn;
+		return this;
+	}
+
+	public String getKeyStr() {
+		return keyStr;
+	}
+
+	public RequestOptions setKeyStr(String keyStr) {
+		this.keyStr = keyStr;
+		return this;
 	}
 }

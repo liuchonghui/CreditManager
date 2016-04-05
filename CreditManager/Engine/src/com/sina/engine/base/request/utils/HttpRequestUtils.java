@@ -134,13 +134,22 @@ public class HttpRequestUtils {
 		try{
 			Context con = EngineManager.getInstance().getContext();
 			PackageInfo pi=con.getPackageManager().getPackageInfo(con.getPackageName(), 0);
-			String v_name = con!=null?pi.versionName:"";
-			String v_code = con!=null?String.valueOf(pi.versionCode):"";
+			String v_name = taskModel.getRequestOptions().getVersionName();
+			if (v_name == null || v_name.length() == 0) {
+				v_name = con!=null?pi.versionName:"";
+			}
+			String v_code = taskModel.getRequestOptions().getVersionCode();
+			if (v_code == null || v_code.length() == 0) {
+				v_code = con!=null?String.valueOf(pi.versionCode):"";
+			}
 			String platform = "android";
 			String sys_version = android.os.Build.VERSION.RELEASE;
 //			Properties configPro = Utils.getConfigProperties(con);
 //			String cid = configPro.getProperty("cid", "");
 			String cid = EngineManager.getInstance().getEngineConfig().getCid();
+			if (cid == null || cid.length() == 0) {
+				cid = taskModel.getRequestOptions().getCid();
+			}
 			String channel_id = con!=null?cid:"";
 			Long currentTime = System.currentTimeMillis();
 			
@@ -151,6 +160,9 @@ public class HttpRequestUtils {
 			String timestampStr = String.valueOf(currentTime);
 			
 			String partner_id = EngineManager.getInstance().getEngineConfig().getPartner_id();
+			if (partner_id == null || partner_id.length() == 0) {
+				partner_id = taskModel.getRequestOptions().getPartner_id();
+			}
 			String deviceId = EngineManager.getInstance().getEngineConfig().getDeviceId();
 			publicMap.put("timestamp", timestampStr);
 			publicMap.put("version", v_name);
@@ -191,7 +203,7 @@ public class HttpRequestUtils {
 		LogUtils.d(Constant.ENGINE_REQUEST_LOG_TAG, "sign ="+getSign);
 		getSign = MD5Utils.encode(getSign);
 		if(config.getIsEncrypt()){
-			getSign = EpUtils.getEpStr(EngineManager.getInstance().getContext(), sign);
+			getSign = EpUtils.getEpStr(EngineManager.getInstance().getContext(), taskModel, sign);
 		}
 		
 		LogUtils.d(Constant.ENGINE_REQUEST_LOG_TAG, "md5 sign="+getSign);

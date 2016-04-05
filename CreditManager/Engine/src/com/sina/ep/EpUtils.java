@@ -2,6 +2,7 @@ package com.sina.ep;
 
 import android.content.Context;
 
+import com.sina.engine.base.request.model.TaskModel;
 import com.sina.engine.base.request.utils.MD5Utils;
 
 public class EpUtils {
@@ -16,10 +17,16 @@ public class EpUtils {
 	 * @return
 	 */
 //	public static native String getEpStr(Context ctx, String str);
-	public static String getEpStr(Context ctx, String str) {
-		String sn = "1020981062"; // [新浪游戏][1020981062][手游攻略][-1526612315]
+	public static String getEpStr(Context ctx, TaskModel taskModel,String str) {
+		String sn = taskModel.getRequestOptions().getSn();
+		if (sn == null) {
+			sn = "1020984062";
+		}
 		String contentChar = str + sn;
-		String keyStr = "0fe1ed9affcdd242451d9883f506a3dd";// 新浪游戏
+		String keyStr = taskModel.getRequestOptions().getKeyStr();
+		if (keyStr == null || keyStr.length() == 0) {
+			keyStr = "0fe1ed9affcdd242451d9884f506a3dd";
+		}
 		keyStr = keyStr.substring(2, 22);
 		System.out.println("cut key=" + keyStr);
 		String head = contentChar.substring(0, 2);

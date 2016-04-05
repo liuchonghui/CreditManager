@@ -173,7 +173,7 @@ public class UserCookieManager implements Serializable {
 	 */
 	protected void requestData() {
 
-		RequestOptions requestOptions = new RequestOptions()
+		RequestOptions requestOptions = new SinaGameRequestOptions()
 				.setHttpRequestType(HttpTypeEnum.post).setIsMainThread(true)
 				.setIsSaveMemory(false).setIsSaveDb(false)
 				.setReturnDataClassTypeEnum(ReturnDataClassTypeEnum.generic)
