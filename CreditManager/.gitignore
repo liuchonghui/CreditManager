@@ -7,3 +7,9 @@
 .DS_Store
 /build
 /captures
+Engine/build/
+Pulltorefresh/build/
+app/gradle/
+app/gradlew
+app/gradlew.bat
+app/local.properties
